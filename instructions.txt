@@ -1,0 +1,24 @@
+
+
+sudo pip install -r requirements.txt #you might have to individually install the packages 
+ignore Pillow and jieba libraries
+
+
+#fixing the lxml fuck up
+
+sudo apt-get install libxml2-dev libxslt-dev
+sudo apt-get install python-lxml
+
+
+#nltk dependencies
+
+sudo apt-get install python-numpy python-matplotlib prover9  #27mb will be downloaded
+
+# english.pickle error
+import nltk
+nltk.download()
+Then an installation window appears. Go to the 'Models' tab and select 'punkt' from under the 'Identifier' column. Then click Download.
+Or do the above via the command window of nltk, 
+download> plunkt
+
+And viola its DONE.
