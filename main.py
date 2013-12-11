@@ -23,8 +23,6 @@ def filter(str):
     return re.sub(r'[^a-zA-Z0-9\[\]\'\"\,\.\-\:\;\#\@\!\*\&\%\$]',' ', str)
 
 def test():
-    
-    print "running test instead of main"
     url = 'http://www.huffingtonpost.com/2013/11/22/twitter-forward-secrecy_n_4326599.html'
     summaries = SummarizeUrl(url)
     print summaries
@@ -41,7 +39,7 @@ def main():
     for i in p:
         url += '&ned=%s&topic=%s'%(i[2],i[0]) #adding country code and topic in url
        
-        print  "/***************\n%s  %s\n%s\n***************/"%(i[2],i[1],url)
+        print  "/***************\n%s [%s]\n***************/"%(i[1],i[2])
         rss = feedparser.parse(url)
 
         for j in rss['entries']:
@@ -53,17 +51,20 @@ def main():
             source = title[n+1: ]
             title = title[:n]
             
-            summary = SummarizeUrl(link)
+            try:  summary = SummarizeUrl(link)
+            except:  
+                summary = []
+                print 'BAD LINK' + link        
 
-            if summary != None and len(summary) > 1:
+            if summary != None and len(summary) > 2:
                 s=''
                 count += 1
-                s += '◦ ' + summary[0]
+                #s += '◦ ' + summary[0]
                 for k in summary[1:]:
-                    s += ' \n\n◦ '+ k
+                    s += '\n\n'+ k
 
-                print "#%d : %s :%d items  in summary"%(count , title , len(summary) )
-                title = u'\u00BB ' + title
+                print "#%d :%d items  in summary"%(count , len(summary) )
+                #title = u'\u00BB ' + title
                 arr.append({ 'title': title, 'link':link ,'summary':s,'category': i[1],'date':j['published'],'source':source })           
             else:
                 print 'BAD LINK '+ link
@@ -79,5 +80,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    #test()
-    #print filter('dash - comma , colon : hash \/ appostophe  ')
