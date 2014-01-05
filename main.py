@@ -22,6 +22,14 @@ import re
 def filter(str):
     return re.sub(r'[^a-zA-Z0-9\[\]\'\"\,\.\-\:\;\#\@\!\*\&\%\$]',' ', str)
 
+def clean(title,url):
+    tags = ['indianexpress','rape','Rape','Big Boss']
+    for i in tags:
+        if i in title or i in url:
+            return False
+    return True
+
+
 def test():
     url = 'http://www.huffingtonpost.com/2013/11/22/twitter-forward-secrecy_n_4326599.html'
     summaries = SummarizeUrl(url)
@@ -50,30 +58,43 @@ def main():
             n = title.rfind('-')
             source = title[n+1: ]
             title = title[:n]
-            
-            try:  summary = SummarizeUrl(link)
-            except:  
-                summary = []
-                print 'BAD LINK' + link        
 
-            if summary != None and len(summary) > 2:
-                s=''
+            if not clean(title,url):
+                print 'Filtered dirty news: %s'%(filter(title))
+                continue            
+
+            #summary = SummarizeUrl(link)
+            try:
+                s = ''  
+                summary = SummarizeUrl(link)
+                s += summary[0]
+                for k in summary[1:]:
+                    s += '\n\n' + k
+            except Exception as e:
+                print e  
+                summary = []
+                print 'Summary creation error for link: ' + link
+                continue        
+
+            if summary != None and len(summary) > 2 and len(s) < 1000 and len(s) > 200:
+                
                 count += 1
-                #s += '◦ ' + summary[0]
+                '''
+                s += summary[0]
                 for k in summary[1:]:
                     s += '\n\n'+ k
-
-                print "#%d :%d items  in summary"%(count , len(summary) )
-                #title = u'\u00BB ' + title
+                '''
+                print "#%d %s :items %d : len %d"%(count ,filter(title), len(summary) , len(s) )
+                title = u'\u00BB ' + title
                 arr.append({ 'title': title, 'link':link ,'summary':s,'category': i[1],'date':j['published'],'source':source })           
             else:
-                print 'BAD LINK '+ link
+                print 'UNFIT summary : '+ link
         url =  url[:url.rfind('&ned')]     # removing country code and topic code from url
     
     
     arr.insert( 0 , "%d items last updated on %s"%(count , strftime("%Y-%m-%d %H:%M:%S") ) )
 
-    with open("../public_html/summary.txt", "w") as f:
+    with open("/home/sauravtom/public_html/summary.txt", "w") as f:
         dict['categories'] = ['India','World','Entertainment','Technology','Business','Science','Sports','Health']
         dict['summary'] = arr
         f.write(json.dumps(dict))
