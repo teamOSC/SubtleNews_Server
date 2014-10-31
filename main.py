@@ -19,6 +19,15 @@ from time import strftime
 
 import re
 
+def get_image(desc):
+    temp = desc.split('src="')[-1]
+    img = temp.split('"')[0]
+    if not img.startswith("https://t"):
+        img = "http://i.imgur.com/KU1vsAS.png"
+    print img
+    return img
+
+
 def filter(str):
     return re.sub(r'[^a-zA-Z0-9\[\]\'\"\,\.\-\:\;\#\@\!\*\&\%\$]',' ', str)
 
@@ -56,6 +65,7 @@ def main():
 
             title = j['title']
             n = title.rfind('-')
+            image = get_image(j['description'])
             source = title[n+1: ]
             title = title[:n]
 
@@ -84,9 +94,10 @@ def main():
                 for k in summary[1:]:
                     s += '\n\n'+ k
                 '''
+                print image
                 print "#%d %s :items %d : len %d"%(count ,filter(title), len(summary) , len(s) )
                 title = u'\u00BB ' + title
-                arr.append({ 'title': title, 'link':link ,'summary':s,'category': i[1],'date':j['published'],'source':source })           
+                arr.append({ 'image':image,'title': title, 'link':link ,'summary':s,'category': i[1],'date':j['published'],'source':source })           
             else:
                 print 'UNFIT summary : '+ link
         url =  url[:url.rfind('&ned')]     # removing country code and topic code from url
